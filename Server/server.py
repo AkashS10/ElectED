@@ -9,7 +9,7 @@ import socket
 import databaseHandler
 import ui
 
-root = ui.Tk()
+root = ui.CTk()
 uiFrame = ui.UI(root)
 connectedClients = []
 
@@ -17,6 +17,11 @@ class Client:
     def __init__(self, c):
         self.c = c
         self.thread = threading.Thread(target=self.recv, daemon=True)
+        self.thread.start()
+        self.categories = []
+        for i in database.getCategories():
+            self.categories.append(i[1])
+        self.c.send(f"/act/{self.categories}".encode()) # ACT - Available CaTegories
 
     def recv(self):
         while True:
@@ -26,6 +31,7 @@ class Client:
                 print("Error: ", e)
                 self.c.close()
                 break
+            if data == "": break
             print("Data received: ", data.decode())
 
 def socketAcceptLoop():

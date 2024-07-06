@@ -15,7 +15,7 @@ import sqlite3
 
 class DatabaseHandler:
     def __init__(self):
-        self.database = sqlite3.connect("database.db")
+        self.database = sqlite3.connect("database.db", check_same_thread=False)
         self.db = self.database.cursor()
         self.db.execute("SELECT * FROM sqlite_master WHERE type='table'")
         if self.db.fetchall() == []:
