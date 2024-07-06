@@ -8,3 +8,5 @@ class UI(Frame):
         parent.title("E-Election Management")
         parent.minsize(1280, 720)
         parent.state("zoomed")
+
+        self.place(relx=0, rely=0, relwidth=1, relheight=1)
