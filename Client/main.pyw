@@ -11,6 +11,7 @@ import socket
 class SocketConnHandler:
     def __init__(self):
         self.s = socket.socket()
+        self.connected = False
 
     def connect(self):
         ip = cIPEnt.get()
@@ -22,10 +23,13 @@ class SocketConnHandler:
             return
         try:
             self.s.connect((ip, port))
+            self.connected = True
         except Exception:
             messagebox.showerror("ElectED", "Invalid IP/Port")
             return
         
+        self.s.send(f"/hn/{socket.gethostname()}".encode())
+
         data, addr = self.s.recvfrom(4096)
         data = data.decode()
         if data.startswith("/act/"):
@@ -44,6 +48,21 @@ class SocketConnHandler:
             messagebox.showerror("ElectED", "Select a category to begin voting")
             return
         self.s.send(f"/cts/{category}".encode()) # CTS - CaTegory Select
+
+        #TODO: Send candidates list from server and receieve
+        
+        configureFrame.place_forget()
+        cCategoryOptionMenu.place_forget()
+        root.wm_attributes("-fullscreen", True)
+        root.state("zoomed")
+
+    def disconnect(self, terminated=False):
+        self.s.send("/d/".encode())
+        self.s.close()
+        if terminated:
+            messagebox.showinfo("ElectED", "The client session was terminated from the server")
+            root.destroy()
+        exit()
 
 s = SocketConnHandler()
 
@@ -77,3 +96,5 @@ cBeginVotingBtn = CTkButton(configureFrame, text="Begin Voting", font=("Segoe UI
 cBeginVotingBtn.place(relx=0.1, rely=0.8, relwidth=0.8, relheight=0.125)
 
 root.mainloop()
+
+s.disconnect()
