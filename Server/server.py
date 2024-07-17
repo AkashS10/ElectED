@@ -4,7 +4,9 @@ if os.getcwd()[-6:] != "Server":
     os.chdir("Server")
 
 import threading
+import hashlib
 import socket
+import time
 
 import databaseHandler
 import ui
@@ -30,7 +32,7 @@ class Client:
     def recv(self):
         while True:
             try:
-                data, addr = self.c.recvfrom(1024)
+                data, addr = self.c.recvfrom(4096)
                 data = data.decode()
             except Exception as e:
                 print("Error: ", e)
@@ -38,17 +40,31 @@ class Client:
                 break
             if data == "": break
             elif data == "/d/":
-                print("Client disconnected")
+                print(f"{self.hostname if self.hostname != None else 'Client'} disconnected")
                 self.disconnect()
                 break
             elif data.startswith("/cts/"):
                 data = data[5:]
                 for i in database.getCategories():
                     if i[1] == data:
-                        self.categoryID = i[0]
+                        self.categoryID = int(i[0])
                         self.category = i[1]
                 print(f"{self.hostname if self.hostname != None else 'Client'} chose category {self.category}, {self.categoryID}")
                 updateConnectedClientsTV()
+                candidates = []
+                for i in database.getCandidates():
+                    if i[1] == self.category:
+                        candidates.append(i)
+                for imagePath in candidates:
+                    imagePath = imagePath[4]
+                    f = open(f"partyArt/{imagePath}", "rb")
+                    image = f.read()
+                    f.close()
+                    self.c.send(f"/pim/{imagePath}/{len(image)}/{hashlib.sha256(image).hexdigest()}/".encode()) # PIM - Party IMage
+                    time.sleep(0.1)
+                    self.c.send(image)
+                self.c.send(f"/cdl/{candidates}".encode()) # CDL - CanDidates List
+
             elif data.startswith("/hn/"):
                 data = data[4:]
                 self.hostname = data
