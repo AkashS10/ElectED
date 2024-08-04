@@ -1,6 +1,8 @@
-from customtkinter import *
 from tkinter.ttk import Treeview, Style
+from tkinter import messagebox
+from datetime import datetime
 from PIL import Image as Img
+from customtkinter import *
 from tkinter import *
 
 class UI(Frame):
@@ -69,6 +71,16 @@ class UI(Frame):
         self.votingInformationTVScrollbar.place(relx=0.95, rely=0.1, relwidth=0.025, relheight=0.86)
         self.votingInformationTV.configure(yscrollcommand=self.votingInformationTVScrollbar.set)
 
+        self.logEnt = CTkTextbox(self.logFrame)
+        self.logEnt.configure(state="disabled")
+        self.logEnt.place(relx=0.02, rely=0.05, relwidth=0.96, relheight=0.9)
+
+        self.manageCandidatesBtn = CTkButton(self.quickControlsFrame, text="Manage Candidates", corner_radius=10, font=("Segoe UI", 18))
+        self.manageCandidatesBtn.place(relx=0.01, rely=0.125, relwidth=0.225, relheight=0.75)
+
+        self.disconnectClientBtn = CTkButton(self.quickControlsFrame, text="Disconnect client", corner_radius=10, font=("Segoe UI", 18), command=self.disconnectClientFunc)
+        self.disconnectClientBtn.place(relx=0.24, rely=0.125, relwidth=0.225, relheight=0.75)
+
         self.place(relx=0, rely=0, relwidth=1, relheight=1)
 
     def updateConnectedClientsTV(self, values):
@@ -92,7 +104,18 @@ class UI(Frame):
         for child in children:
             children += self.getAllChildren(tree, child)
         return children
-
+    
+    def log(self, message):
+        self.logEnt.configure(state="normal")
+        self.logEnt.insert(END, f"[{datetime.now().strftime('%I:%M:%S %p')}] {message}\n")
+        self.logEnt.configure(state="disabled")
+    
+    def disconnectClientFunc(self):
+        if len(self.connectedClientsTV.selection()) == 0:
+            messagebox.showerror("ElectED - Server", "Please select a client")
+            return
+        self.disconnect(self.connectedClientsTV.item(self.connectedClientsTV.selection())['values'][0]-1)
+        
 if __name__ == "__main__":
     import os
     os.chdir("Server")

@@ -11,10 +11,6 @@ import time
 import databaseHandler
 import ui
 
-root = ui.CTk()
-uiFrame = ui.UI(root)
-connectedClients = []
-
 class Client:
     def __init__(self, c):
         self.c = c
@@ -35,13 +31,12 @@ class Client:
                 data, addr = self.c.recvfrom(4096)
                 data = data.decode()
             except Exception as e:
-                print("Error: ", e)
-                self.c.close()
-                break
+                disconnect(self)
+                return
             if data == "": break
             elif data == "/d/":
-                print(f"{self.hostname if self.hostname != None else 'Client'} disconnected")
-                self.disconnect()
+                uiFrame.log(f"{self.hostname if self.hostname != None else 'Client'} disconnected")
+                disconnect(self, False)
                 break
             elif data.startswith("/cts/"):
                 data = data[5:]
@@ -49,7 +44,7 @@ class Client:
                     if i[1] == data:
                         self.categoryID = int(i[0])
                         self.category = i[1]
-                print(f"{self.hostname if self.hostname != None else 'Client'} chose category {self.category}, {self.categoryID}")
+                uiFrame.log(f"{self.hostname if self.hostname != None else 'Client'} chose category {self.category}, {self.categoryID}")
                 updateConnectedClientsTV()
                 candidates = []
                 for i in database.getCandidates():
@@ -68,15 +63,30 @@ class Client:
             elif data.startswith("/hn/"):
                 data = data[4:]
                 self.hostname = data
-                print(f"Received hostname: {self.hostname}")
+                uiFrame.log(f"Received hostname: {self.hostname}")
                 updateConnectedClientsTV()
             else:
-                print("Data received: ", data)
-    
-    def disconnect(self):
-        connectedClients.remove(self)
-        updateConnectedClientsTV()
-        self.c.close()
+                uiFrame.log(f"Data received from {self.hostname if self.hostname else 'a client'}: ", data)
+
+def disconnect(self, kicked=False):
+    if type(self) == int:
+        disconnect(connectedClients[self], True)
+        return
+    try:
+        self.thread.join(0)
+    except RuntimeError:
+        pass
+    try:
+        if kicked:
+            self.c.send("/dis/".encode())
+            uiFrame.log(f"{self.hostname} was disconnected from the server")
+        else:
+            self.c.send("/bye/".encode())
+    except ConnectionResetError or OSError:
+        pass
+    connectedClients.remove(self)
+    updateConnectedClientsTV()
+    self.c.close()
 
 def updateConnectedClientsTV():
     values = []
@@ -87,21 +97,28 @@ def updateConnectedClientsTV():
 def socketAcceptLoop():
     while True:
         c, addr = s.accept()
-        print("Client connected")
+        uiFrame.log("Client connected")
         connectedClients.append(Client(c))
 
-database = databaseHandler.DatabaseHandler()
+root = ui.CTk()
+uiFrame = ui.UI(root)
+uiFrame.disconnect = disconnect
+connectedClients = []
 
+ip = "0.0.0.0"
+port = 15165
 s = socket.socket()
-s.bind(("0.0.0.0", 15165))
+s.bind((ip, port))
 s.listen()
 tSocketLoop = threading.Thread(target=socketAcceptLoop, daemon=True)
 tSocketLoop.start()
 
+database = databaseHandler.DatabaseHandler()
+
+uiFrame.log(f"Server running on {ip}:{port}")
+
 root.mainloop()
-#Disconnect before stopping the thread
 for client in connectedClients:
-    client.c.close()
-    client.thread.join(0)
+    disconnect(client)
 tSocketLoop.join(0)
 database.database.close()
