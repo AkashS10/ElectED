@@ -1,10 +1,13 @@
+from PIL import Image as Img
 from customtkinter import *
 import threading
 import hashlib
 import socket
 import os
 
-class SocketConnHandler:
+set_appearance_mode("dark")
+
+class NetworkHandler:
     def __init__(self, messagebox, root):
         self.s = socket.socket()
         self.connected = False
@@ -77,11 +80,13 @@ class SocketConnHandler:
                 break
     
     def displayCandidates(self):
-        if len(self.candidates) == 2:
-            c1 = CTkFrame(self.votingFrame, corner_radius=20)
-            c1.place(relx=0.2, rely=0.375, relwidth=0.225, relheight=0.4)
-            c2 = CTkFrame(self.votingFrame, corner_radius=20)
-            c2.place(relx=0.575, rely=0.375, relwidth=0.225, relheight=0.4)
+        match len(self.candidates):
+            case 2:
+                c1 = CandidateFrame(self.votingFrame, self.candidates[0][2], self.candidates[0][3], self.candidates[0][4])
+                c1.place(relx=0.2, rely=0.375, relwidth=0.225, relheight=0.4)
+
+                c2 = CandidateFrame(self.votingFrame, self.candidates[1][2], self.candidates[1][3], self.candidates[1][4])
+                c2.place(relx=0.575, rely=0.375, relwidth=0.225, relheight=0.4)
     
     def beginVoting(self, category, configureFrame, vCategoryTitleLbl):
         if category == "Select...":
@@ -100,15 +105,46 @@ class SocketConnHandler:
             self.thread.join(0)
             self.s.send("/d/".encode())
             self.s.close()
-        except AttributeError or ConnectionResetError:
+        except Exception:
             pass
         if disconnected:
             self.messagebox.showinfo("ElectED", "You were disconnected from the Server")
         elif serverClosed:
             self.messagebox.showinfo("ElectED", "Server Closed")
-        self.root.destroy()
         lof = os.listdir(".")
         for i in lof:
             if i.endswith(".png"):
                 os.remove(i)
+        try:
+            self.root.destroy()
+        except:
+            pass
         exit()
+
+class CandidateFrame(CTkFrame):
+    def __init__(self, parent, candidateName, partyName, partyArtPath, **kwargs):
+        kwargs['corner_radius'] = 20
+        super().__init__(parent, **kwargs)
+
+        nameLbl = CTkLabel(self, text=candidateName, font=("Seoge UI", 24, "bold"), corner_radius=20)
+        nameLbl.place(relx=0.1, rely=0.04, relwidth=0.8, relheight=0.15)
+
+        pNameLbl = CTkLabel(self, text=partyName, font=("Segoe UI", 20))
+        pNameLbl.place(relx=0.2, rely=0.19, relwidth=0.6, relheight=0.1)
+
+        pImage = CTkLabel(self, text="", image=CTkImage(None, Img.open(partyArtPath), (200, 200)))
+        pImage.place(relx=0.175, rely=0.315, relwidth=0.65, relheight=0.65)
+
+        self.bind("<Button-1>", self.callback)
+        nameLbl.bind("<Button-1>", self.callback)
+        pNameLbl.bind("<Button-1>", self.callback)
+        pImage.bind("<Button-1>", self.callback)
+    
+    def callback(self, e):
+        # Communicate to server, move mouse to center, overlay waiting frame and wait for command from server for next round
+        print("Clicked")
+
+if __name__ == "__main__":
+    import os
+    os.chdir("Client")
+    import main # type: ignore

@@ -72,19 +72,21 @@ def disconnect(self, kicked=False):
     if type(self) == int:
         disconnect(connectedClients[self], True)
         return
-    try:
-        self.thread.join(0)
-    except RuntimeError:
-        pass
+    if self not in connectedClients:
+        return
+    connectedClients.remove(self)
     try:
         if kicked:
             self.c.send("/dis/".encode())
             uiFrame.log(f"{self.hostname} was disconnected from the server")
         else:
             self.c.send("/bye/".encode())
-    except ConnectionResetError or OSError:
+        try:
+            self.thread.join(0)
+        except RuntimeError:
+            pass
+    except (ConnectionResetError, OSError) as e:
         pass
-    connectedClients.remove(self)
     updateConnectedClientsTV()
     self.c.close()
 

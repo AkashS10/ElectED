@@ -5,6 +5,8 @@ from PIL import Image as Img
 from customtkinter import *
 from tkinter import *
 
+set_appearance_mode("dark")
+
 class UI(Frame):
     def __init__(self, parent, **kwargs):
         kwargs['bg'] = "#222222"
@@ -75,11 +77,14 @@ class UI(Frame):
         self.logEnt.configure(state="disabled")
         self.logEnt.place(relx=0.02, rely=0.05, relwidth=0.96, relheight=0.9)
 
+        self.manageCategoriesBtn = CTkButton(self.quickControlsFrame, text="Manage Categories", corner_radius=10, font=("Segoe UI", 18))
+        self.manageCategoriesBtn.place(relx=0.01, rely=0.125, relwidth=0.225, relheight=0.75)
+
         self.manageCandidatesBtn = CTkButton(self.quickControlsFrame, text="Manage Candidates", corner_radius=10, font=("Segoe UI", 18))
-        self.manageCandidatesBtn.place(relx=0.01, rely=0.125, relwidth=0.225, relheight=0.75)
+        self.manageCandidatesBtn.place(relx=0.24, rely=0.125, relwidth=0.225, relheight=0.75)
 
         self.disconnectClientBtn = CTkButton(self.quickControlsFrame, text="Disconnect client", corner_radius=10, font=("Segoe UI", 18), command=self.disconnectClientFunc)
-        self.disconnectClientBtn.place(relx=0.24, rely=0.125, relwidth=0.225, relheight=0.75)
+        self.disconnectClientBtn.place(relx=0.47, rely=0.125, relwidth=0.225, relheight=0.75)
 
         self.place(relx=0, rely=0, relwidth=1, relheight=1)
 

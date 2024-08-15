@@ -7,7 +7,7 @@ from tkinter import messagebox
 from customtkinter import *
 import os
 
-import networking
+import backend
 
 def changeState(data):
     cCategoryOptionMenuVar.set("Select...")
@@ -24,7 +24,7 @@ root.geometry("400x500")
 root.resizable(False, False)
 root.iconbitmap("icon.ico")
 
-s = networking.SocketConnHandler(messagebox, root)
+s = backend.NetworkHandler(messagebox, root)
 
 configureFrame = CTkFrame(root)
 configureFrame.place(relx=0, rely=0, relheight=1, relwidth=1)
