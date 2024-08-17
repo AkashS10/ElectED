@@ -61,31 +61,32 @@ class DatabaseHandler:
 
 #TODO: Remove after development
 if __name__ == "__main__":
-     db = DatabaseHandler()
+    db = DatabaseHandler()
 
-    #  db.createCategory("SPL Boy")
-    #  db.createCategory("SPL Girl")
-    #  db.createCategory("ASPL Boy")
-    #  db.createCategory("ASPL Girl")
+    # db.createCategory("SPL Boy")
+    # db.createCategory("SPL Girl")
+    # db.createCategory("ASPL Boy")
+    # db.createCategory("ASPL Girl")
 
-    #  db.createCandidate("SPL Boy", "Sri Sai Raj", "Saturn", "1.png")
-    #  db.createCandidate("SPL Boy", "Sri a Raj", "Moon", "2.png")
-    #  db.createCandidate("SPL Boy", "ads Sai Raj", "Mars", "3.png")
+    # db.createCandidate("SPL Boy", "Sri Sai Raj", "Saturn", "1.png")
+    # db.createCandidate("SPL Boy", "Sri a Raj", "Moon", "2.png")
+    # db.createCandidate("SPL Boy", "ads Sai Raj", "Mars", "3.png")
 
-    #  db.createCandidate("ASPL Boy", "Sri Sai Raj", "Saturn", "1.png")
-    #  db.createCandidate("ASPL Boy", "ads Sai Raj", "Venus", "4.png")
+    # db.createCandidate("ASPL Boy", "Sri Sai Raj", "Saturn", "1.png")
+    # db.createCandidate("ASPL Boy", "ads Sai Raj", "Venus", "4.png")
 
-    #  db.createCandidate("SPL Girl", "Sri a Raj", "Moon", "2.png")
-    #  db.createCandidate("SPL Girl", "S Raj", "Saturn", "2.png")
-    #  db.createCandidate("SPL Girl", "Sri a ", "Uranus", "2.png")
-    #  db.createCandidate("SPL Girl", "Sraj", "Mars", "2.png")
+    # db.createCandidate("SPL Girl", "Sri a Raj", "Moon", "2.png")
+    # db.createCandidate("SPL Girl", "S Raj", "Saturn", "2.png")
+    # db.createCandidate("SPL Girl", "Sri a ", "Uranus", "2.png")
+    # db.createCandidate("SPL Girl", "Sraj", "Mars", "2.png")
 
-    #  db.createCandidate("ASPL Girl", "ads Sai Raj", "Venus", "4.png")
-    #  db.createCandidate("ASPL Girl", "ads Raj", "Neptune", "4.png")
-    #  db.createCandidate("ASPL Girl", "ads  Raj", "Pluto", "4.png")
-    #  db.createCandidate("ASPL Girl", " Raj", "Juipter", "4.png")
-    #  db.createCandidate("ASPL Girl", "Raju", "Mercury", "4.png")
+    # db.createCandidate("ASPL Girl", "ads Sai Raj", "Venus", "2.png")
+    # db.createCandidate("ASPL Girl", "ads Raj", "Neptune", "4.png")
+    # db.createCandidate("ASPL Girl", "ads  Raj", "Pluto", "4.png")
+    # db.createCandidate("ASPL Girl", " Raj", "Juipter", "4.png")
+    # db.createCandidate("ASPL Girl", "Raju", "Mercury", "4.png")
 
-     print(*db.getCategories(), sep="\n")
-     print("\n")
-     print(*db.getCandidates(), sep="\n")
+
+    print(*db.getCategories(), sep="\n")
+    print("\n")
+    print(*db.getCandidates(), sep="\n")

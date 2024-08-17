@@ -87,6 +87,105 @@ class NetworkHandler:
 
                 c2 = CandidateFrame(self.votingFrame, self.candidates[1][2], self.candidates[1][3], self.candidates[1][4])
                 c2.place(relx=0.575, rely=0.375, relwidth=0.225, relheight=0.4)
+            case 3:
+                c1 = CandidateFrame(self.votingFrame, self.candidates[0][2], self.candidates[0][3], self.candidates[0][4])
+                c1.place(relx=0.1225, rely=0.375, relwidth=0.225, relheight=0.4)
+
+                c2 = CandidateFrame(self.votingFrame, self.candidates[1][2], self.candidates[1][3], self.candidates[1][4])
+                c2.place(relx=0.3925, rely=0.375, relwidth=0.225, relheight=0.4)
+
+                c3 = CandidateFrame(self.votingFrame, self.candidates[2][2], self.candidates[2][3], self.candidates[2][4])
+                c3.place(relx=0.6625, rely=0.375, relwidth=0.225, relheight=0.4)
+            case 4:
+                c1 = CandidateFrame(self.votingFrame, self.candidates[0][2], self.candidates[0][3], self.candidates[0][4])
+                c1.place(relx=0.0625, rely=0.375, relwidth=0.2, relheight=0.4)
+
+                c2 = CandidateFrame(self.votingFrame, self.candidates[1][2], self.candidates[1][3], self.candidates[1][4])
+                c2.place(relx=0.2875, rely=0.375, relwidth=0.2, relheight=0.4)
+                
+                c3 = CandidateFrame(self.votingFrame, self.candidates[2][2], self.candidates[2][3], self.candidates[2][4])
+                c3.place(relx=0.5125, rely=0.375, relwidth=0.2, relheight=0.4)
+
+                c4 = CandidateFrame(self.votingFrame, self.candidates[3][2], self.candidates[3][3], self.candidates[3][4])
+                c4.place(relx=0.7375, rely=0.375, relwidth=0.2, relheight=0.4)
+            case 5:
+                c1 = CandidateFrame(self.votingFrame, self.candidates[0][2], self.candidates[0][3], self.candidates[0][4])
+                c1.place(relx=0.0625, rely=0.17, relwidth=0.2, relheight=0.38)
+
+                c2 = CandidateFrame(self.votingFrame, self.candidates[1][2], self.candidates[1][3], self.candidates[1][4])
+                c2.place(relx=0.2875, rely=0.17, relwidth=0.2, relheight=0.38)
+                
+                c3 = CandidateFrame(self.votingFrame, self.candidates[2][2], self.candidates[2][3], self.candidates[2][4])
+                c3.place(relx=0.5125, rely=0.17, relwidth=0.2, relheight=0.38)
+
+                c4 = CandidateFrame(self.votingFrame, self.candidates[3][2], self.candidates[3][3], self.candidates[3][4])
+                c4.place(relx=0.7375, rely=0.17, relwidth=0.2, relheight=0.38)
+
+                c5 = CandidateFrame(self.votingFrame, self.candidates[4][2], self.candidates[4][3], self.candidates[4][4])
+                c5.place(relx=0.3925, rely=0.595, relwidth=0.2, relheight=0.38)
+            case 6:
+                c1 = CandidateFrame(self.votingFrame, self.candidates[0][2], self.candidates[0][3], self.candidates[0][4])
+                c1.place(relx=0.0625, rely=0.17, relwidth=0.2, relheight=0.38)
+
+                c2 = CandidateFrame(self.votingFrame, self.candidates[1][2], self.candidates[1][3], self.candidates[1][4])
+                c2.place(relx=0.2875, rely=0.17, relwidth=0.2, relheight=0.38)
+                
+                c3 = CandidateFrame(self.votingFrame, self.candidates[2][2], self.candidates[2][3], self.candidates[2][4])
+                c3.place(relx=0.5125, rely=0.17, relwidth=0.2, relheight=0.38)
+
+                c4 = CandidateFrame(self.votingFrame, self.candidates[3][2], self.candidates[3][3], self.candidates[3][4])
+                c4.place(relx=0.7375, rely=0.17, relwidth=0.2, relheight=0.38)
+
+                c5 = CandidateFrame(self.votingFrame, self.candidates[4][2], self.candidates[4][3], self.candidates[4][4])
+                c5.place(relx=0.2, rely=0.595, relwidth=0.2, relheight=0.38)
+
+                c6 = CandidateFrame(self.votingFrame, self.candidates[5][2], self.candidates[5][3], self.candidates[5][4])
+                c6.place(relx=0.575, rely=0.595, relwidth=0.2, relheight=0.38)
+            case 7:
+                c1 = CandidateFrame(self.votingFrame, self.candidates[0][2], self.candidates[0][3], self.candidates[0][4])
+                c1.place(relx=0.0625, rely=0.17, relwidth=0.2, relheight=0.38)
+
+                c2 = CandidateFrame(self.votingFrame, self.candidates[1][2], self.candidates[1][3], self.candidates[1][4])
+                c2.place(relx=0.2875, rely=0.17, relwidth=0.2, relheight=0.38)
+                
+                c3 = CandidateFrame(self.votingFrame, self.candidates[2][2], self.candidates[2][3], self.candidates[2][4])
+                c3.place(relx=0.5125, rely=0.17, relwidth=0.2, relheight=0.38)
+
+                c4 = CandidateFrame(self.votingFrame, self.candidates[3][2], self.candidates[3][3], self.candidates[3][4])
+                c4.place(relx=0.7375, rely=0.17, relwidth=0.2, relheight=0.38)
+
+                c5 = CandidateFrame(self.votingFrame, self.candidates[4][2], self.candidates[4][3], self.candidates[4][4])
+                c5.place(relx=0.1225, rely=0.595, relwidth=0.2, relheight=0.38)
+
+                c6 = CandidateFrame(self.votingFrame, self.candidates[5][2], self.candidates[5][3], self.candidates[5][4])
+                c6.place(relx=0.3925, rely=0.595, relwidth=0.2, relheight=0.38)
+
+                c7 = CandidateFrame(self.votingFrame, self.candidates[6][2], self.candidates[6][3], self.candidates[6][4])
+                c7.place(relx=0.6625, rely=0.595, relwidth=0.2, relheight=0.38)
+            case 8:
+                c1 = CandidateFrame(self.votingFrame, self.candidates[0][2], self.candidates[0][3], self.candidates[0][4])
+                c1.place(relx=0.0625, rely=0.17, relwidth=0.2, relheight=0.38)
+
+                c2 = CandidateFrame(self.votingFrame, self.candidates[1][2], self.candidates[1][3], self.candidates[1][4])
+                c2.place(relx=0.2875, rely=0.17, relwidth=0.2, relheight=0.38)
+                
+                c3 = CandidateFrame(self.votingFrame, self.candidates[2][2], self.candidates[2][3], self.candidates[2][4])
+                c3.place(relx=0.5125, rely=0.17, relwidth=0.2, relheight=0.38)
+
+                c4 = CandidateFrame(self.votingFrame, self.candidates[3][2], self.candidates[3][3], self.candidates[3][4])
+                c4.place(relx=0.7375, rely=0.17, relwidth=0.2, relheight=0.38)
+                
+                c5 = CandidateFrame(self.votingFrame, self.candidates[4][2], self.candidates[4][3], self.candidates[4][4])
+                c5.place(relx=0.0625, rely=0.595, relwidth=0.2, relheight=0.38)
+
+                c6 = CandidateFrame(self.votingFrame, self.candidates[5][2], self.candidates[5][3], self.candidates[5][4])
+                c6.place(relx=0.2875, rely=0.595, relwidth=0.2, relheight=0.38)
+                
+                c7 = CandidateFrame(self.votingFrame, self.candidates[6][2], self.candidates[6][3], self.candidates[6][4])
+                c7.place(relx=0.5125, rely=0.595, relwidth=0.2, relheight=0.38)
+
+                c8 = CandidateFrame(self.votingFrame, self.candidates[7][2], self.candidates[7][3], self.candidates[7][4])
+                c8.place(relx=0.7375, rely=0.595, relwidth=0.2, relheight=0.38)
     
     def beginVoting(self, category, configureFrame, vCategoryTitleLbl):
         if category == "Select...":

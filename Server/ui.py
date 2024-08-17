@@ -114,6 +114,7 @@ class UI(Frame):
         self.logEnt.configure(state="normal")
         self.logEnt.insert(END, f"[{datetime.now().strftime('%I:%M:%S %p')}] {message}\n")
         self.logEnt.configure(state="disabled")
+        self.logEnt.see('end')
     
     def disconnectClientFunc(self):
         if len(self.connectedClientsTV.selection()) == 0:
