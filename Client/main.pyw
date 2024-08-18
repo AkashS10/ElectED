@@ -45,7 +45,7 @@ cCategoryOptionMenuVar = StringVar(root, "Select...")
 cCategoryOptionMenu = CTkOptionMenu(root, variable=cCategoryOptionMenuVar, font=("Segoe UI", 20), state="disabled")
 cCategoryOptionMenu.place(relx=0.1, rely=0.7, relwidth=0.8, relheight=0.06)
 
-cBeginVotingBtn = CTkButton(configureFrame, text="Begin Voting", font=("Segoe UI", 20), state="disabled", command=lambda: s.beginVoting(cCategoryOptionMenuVar.get(), configureFrame, vCategoryTitleLbl))
+cBeginVotingBtn = CTkButton(configureFrame, text="Begin Voting", font=("Segoe UI", 20), state="disabled", command=lambda: s.beginVoting(cCategoryOptionMenuVar.get(), configureFrame, vCategoryTitleLbl, vTotalVoteCountLbl))
 cBeginVotingBtn.place(relx=0.1, rely=0.8, relwidth=0.8, relheight=0.125)
 
 votingFrame = CTkFrame(root)

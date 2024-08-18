@@ -59,17 +59,19 @@ class UI(Frame):
         connectedClientsLbl = CTkLabel(self.votingInformationFrame, text="Voting Information", font=("Seoge UI", 20, "bold"))
         connectedClientsLbl.place(relx=0.1, rely=0, relwidth=0.8, relheight=0.1)
 
-        self.votingInformationTV = Treeview(self.votingInformationFrame, columns=("c1", "c2", "c3", "c4"), show="headings")
-        self.votingInformationTV.column("#1", anchor=CENTER, width=21)
+        self.votingInformationTV = Treeview(self.votingInformationFrame, columns=("c1", "c2", "c3", "c4", "c5"), show="headings")
+        self.votingInformationTV.column("#1", anchor=CENTER, width=50)
         self.votingInformationTV.heading("#1", text="S.NO")
-        self.votingInformationTV.column("#2", anchor=CENTER, width=300)
-        self.votingInformationTV.heading("#2", text="Candidate Name")
-        self.votingInformationTV.column("#3", anchor=CENTER, width=150)
-        self.votingInformationTV.heading("#3", text="Party Name")
+        self.votingInformationTV.column("#2", anchor=CENTER, width=100)
+        self.votingInformationTV.heading("#2", text="Category")
+        self.votingInformationTV.column("#3", anchor=CENTER, width=250)
+        self.votingInformationTV.heading("#3", text="Candidate Name")
         self.votingInformationTV.column("#4", anchor=CENTER, width=150)
-        self.votingInformationTV.heading("#4", text="N.O of votes")
+        self.votingInformationTV.heading("#4", text="Party Name")
+        self.votingInformationTV.column("#5", anchor=CENTER, width=150)
+        self.votingInformationTV.heading("#5", text="N.O of votes")
         self.votingInformationTV.place(relx=0.025, rely=0.1, relwidth=0.925, relheight=0.86)
-        self.votingInformationTVScrollbar = CTkScrollbar(self.votingInformationFrame, command=self.connectedClientsTV.yview)
+        self.votingInformationTVScrollbar = CTkScrollbar(self.votingInformationFrame, command=self.votingInformationTV.yview)
         self.votingInformationTVScrollbar.place(relx=0.95, rely=0.1, relwidth=0.025, relheight=0.86)
         self.votingInformationTV.configure(yscrollcommand=self.votingInformationTVScrollbar.set)
 
@@ -102,7 +104,7 @@ class UI(Frame):
             self.votingInformationTV.delete(item)
         
         for i in values:
-            self.votingInformationTV.insert('', 'end', values=(i[0], i[1], i[2], i[3]))
+            self.votingInformationTV.insert('', 'end', values=(i[0], i[1], i[2], i[3], i[4]))
 
     def getAllChildren(self, tree, item=""):
         children = tree.get_children(item)

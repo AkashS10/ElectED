@@ -19,6 +19,7 @@ class Client:
         self.category = None
         self.hostname = None
         self.numVotes = 0
+        self.voted = False
         for i in database.getCategories():
             self.categories.append(i[1])
         self.c.send(f"/act/{self.categories}".encode()) # ACT - Available CaTegories
@@ -36,7 +37,7 @@ class Client:
             if data == "": break
             elif data == "/d/":
                 uiFrame.log(f"{self.hostname if self.hostname != None else 'Client'} disconnected")
-                disconnect(self, False)
+                disconnect(self)
                 break
             elif data.startswith("/cts/"):
                 data = data[5:]
@@ -65,8 +66,27 @@ class Client:
                 self.hostname = data
                 uiFrame.log(f"Received hostname: {self.hostname}")
                 updateConnectedClientsTV()
+
+            elif data.startswith("/vc/"):
+                data = data[4:]
+                id = int(data)
+                database.voteCandidate(id)
+                self.numVotes += 1
+                self.voted = True
+                updateConnectedClientsTV()
+                updateVotingInformationTV()
+                
+                uiFrame.log(f"Recieved vote from {self.hostname}")
+
+                allVoted = True
+                for i in connectedClients:
+                    allVoted = allVoted and i.voted
+                if allVoted:  
+                    for i in connectedClients:
+                        i.voted = False
+                        i.c.send("/nr/".encode()) # NR - Next Round
             else:
-                uiFrame.log(f"Data received from {self.hostname if self.hostname else 'a client'}: ", data)
+                uiFrame.log(f"Data received from {self.hostname if self.hostname else 'a client'}: {data}")
 
 def disconnect(self, kicked=False):
     if type(self) == int:
@@ -87,7 +107,10 @@ def disconnect(self, kicked=False):
             pass
     except (ConnectionResetError, OSError) as e:
         pass
-    updateConnectedClientsTV()
+    try:
+        updateConnectedClientsTV()
+    except:
+        pass
     self.c.close()
 
 def updateConnectedClientsTV():
@@ -95,6 +118,12 @@ def updateConnectedClientsTV():
     for i in range(0, len(connectedClients)):
         values.append((i+1, connectedClients[i].category, connectedClients[i].hostname, connectedClients[i].numVotes))
     uiFrame.updateConnectedClientsTV(values)
+
+def updateVotingInformationTV():
+    values = []
+    for i in database.getCandidates():
+        values.append((i[0], i[1], i[2], i[3], i[5]))
+    uiFrame.updateVotingInformationTV(values)
 
 def socketAcceptLoop():
     while True:
@@ -116,6 +145,7 @@ tSocketLoop = threading.Thread(target=socketAcceptLoop, daemon=True)
 tSocketLoop.start()
 
 database = databaseHandler.DatabaseHandler()
+updateVotingInformationTV()
 
 uiFrame.log(f"Server running on {ip}:{port}")
 

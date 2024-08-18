@@ -59,6 +59,10 @@ class DatabaseHandler:
         self.db.execute("SELECT CandidateID, CategoryName, CandidateName, PartyName, PartyArt, NumVotes FROM Candidates A, Categories B WHERE A.Category = B.CategoryID")
         return self.db.fetchall()
 
+    def voteCandidate(self, id):
+        self.db.execute(f"UPDATE Candidates SET NumVotes=NumVotes+1 WHERE CandidateID={id}")
+        self.database.commit()
+
 #TODO: Remove after development
 if __name__ == "__main__":
     db = DatabaseHandler()
@@ -85,7 +89,6 @@ if __name__ == "__main__":
     # db.createCandidate("ASPL Girl", "ads  Raj", "Pluto", "4.png")
     # db.createCandidate("ASPL Girl", " Raj", "Juipter", "4.png")
     # db.createCandidate("ASPL Girl", "Raju", "Mercury", "4.png")
-
 
     print(*db.getCategories(), sep="\n")
     print("\n")
