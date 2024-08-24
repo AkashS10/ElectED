@@ -28,9 +28,14 @@ class DatabaseHandler:
         maxCategoryID = self.db.fetchone()[0]
         self.db.execute(f"INSERT INTO Categories VALUES({maxCategoryID+1 if maxCategoryID != None else 1}, '{categoryName}')")
         self.database.commit()
+
+    def editCategory(self, categoryID, newCategoryName):
+        self.db.execute(f"UPDATE Categories SET CategoryName='{newCategoryName}' WHERE CategoryID={categoryID}")
+        self.database.commit()
     
     def deleteCategory(self, categoryID):
-        self.db.execute(f"DELETE FROM Categories WHERE CateogoryID={categoryID}")
+        self.db.execute(f"DELETE FROM Candidates WHERE Category={categoryID}")
+        self.db.execute(f"DELETE FROM Categories WHERE CategoryID={categoryID}")
         self.database.commit()
     
     def createCandidate(self, category, candidateName, partyName, partyArt):

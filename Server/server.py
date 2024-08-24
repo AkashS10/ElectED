@@ -112,6 +112,13 @@ def disconnect(self, kicked=False):
     except:
         pass
     self.c.close()
+    allVoted = True
+    for i in connectedClients:
+        allVoted = allVoted and i.voted
+    if allVoted:  
+        for i in connectedClients:
+            i.voted = False
+            i.c.send("/nr/".encode()) # NR - Next Round
 
 def updateConnectedClientsTV():
     values = []
@@ -145,6 +152,7 @@ tSocketLoop = threading.Thread(target=socketAcceptLoop, daemon=True)
 tSocketLoop.start()
 
 database = databaseHandler.DatabaseHandler()
+uiFrame.database = database
 updateVotingInformationTV()
 
 uiFrame.log(f"Server running on {ip}:{port}")

@@ -194,7 +194,7 @@ class NetworkHandler:
                 c8 = CandidateFrame(self.votingFrame, self.candidates[7][0], self.candidates[7][2], self.candidates[7][3], self.candidates[7][4], self)
                 c8.place(relx=0.7375, rely=0.595, relwidth=0.2, relheight=0.38)
         self.waitingOverlay = CTkFrame(self.votingFrame)
-        waitingLbl = CTkLabel(self.waitingOverlay, text="Waiting for next round...", font=("Segoe UI", 28, "bold"))
+        waitingLbl = CTkLabel(self.waitingOverlay, text="Vote casted successfully\nWaiting for next round...", font=("Segoe UI", 28, "bold"))
         waitingLbl.place(relx=0, rely=0, relwidth=1, relheight=1)
         self.numVotes = 0
         for i in self.candidates:
