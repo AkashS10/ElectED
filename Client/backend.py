@@ -77,6 +77,13 @@ class NetworkHandler:
             elif data.startswith("/cdl/"):
                 self.candidates = eval(data[5:])
                 self.displayCandidates()
+                self.configureFrame.place_forget()
+                self.root.wm_attributes("-fullscreen", True)
+                self.root.state("zoomed")
+                self.votingFrame.place(relx=0, rely=0, relwidth=1, relheight=1)
+                self.vCategoryTitleLbl.configure(text=f"Vote for {self.category} candidate")
+            elif data.startswith("/cae/"):
+                self.messagebox.showerror("ElectED", f"Another client has already chosen this category\nPlease select some other category")
             elif data.startswith("/bye/"):
                 self.disconnect(serverClosed=True)
                 break
@@ -206,13 +213,10 @@ class NetworkHandler:
             self.messagebox.showerror("ElectED", "Select a category to begin voting")
             return
         self.s.send(f"/cts/{category}".encode()) # CTS - CaTegory Select
-        
-        configureFrame.place_forget()
-        self.root.wm_attributes("-fullscreen", True)
-        self.root.state("zoomed")
-        self.votingFrame.place(relx=0, rely=0, relwidth=1, relheight=1)
-        vCategoryTitleLbl.configure(text=f"Vote for {category} candidate")
+        self.configureFrame = configureFrame
+        self.vCategoryTitleLbl = vCategoryTitleLbl
         self.vTotalVoteCountLbl = vTotalVoteCountLbl
+        self.category = category
 
     def disconnect(self, disconnected=False, serverClosed=False):
         try:

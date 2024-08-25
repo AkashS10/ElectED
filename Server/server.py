@@ -40,6 +40,9 @@ class Client:
                 disconnect(self)
                 break
             elif data.startswith("/cts/"):
+                if data[5:] in [uiFrame.connectedClientsTV.item(i, 'values')[1] for i in ui.getAllChildren(uiFrame.connectedClientsTV)]:
+                    self.c.send(b"/cae/")
+                    continue
                 data = data[5:]
                 for i in database.getCategories():
                     if i[1] == data:

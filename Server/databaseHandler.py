@@ -46,10 +46,10 @@ class DatabaseHandler:
         self.db.execute(f"INSERT INTO Candidates VALUES({maxCandidateID+1 if maxCandidateID != None else 1}, {categoryID}, '{candidateName}', '{partyName}', '{partyArt}', 0)")
         self.database.commit()
     
-    def editCandidate(self, candidateID, category, candidateName, partyName, partyArt):
+    def editCandidate(self, candidateID, category, candidateName, partyName, partyArt, voteCount):
         self.db.execute(f"SELECT CategoryID FROM Categories WHERE CategoryName='{category}'")
         categoryID = self.db.fetchone()[0]
-        self.db.execute(f"UPDATE Candidates SET Category={categoryID}, CandidateName='{candidateName}', PartyName='{partyName}', PartyArt='{partyArt} WHERE CandidateID={candidateID}'")
+        self.db.execute(f"UPDATE Candidates SET Category={categoryID}, CandidateName='{candidateName}', PartyName='{partyName}', PartyArt='{partyArt}', NumVotes={voteCount} WHERE CandidateID={candidateID}'")
         self.database.commit()
 
     def deleteCandidate(self, candidateID):
