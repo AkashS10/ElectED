@@ -15,6 +15,7 @@ import sqlite3
 
 class DatabaseHandler:
     def __init__(self):
+        self.hideVotes = True
         self.database = sqlite3.connect("database.db", check_same_thread=False)
         self.db = self.database.cursor()
         self.db.execute("SELECT * FROM sqlite_master WHERE type='table'")
@@ -60,9 +61,17 @@ class DatabaseHandler:
         self.db.execute("SELECT * FROM Categories")
         return self.db.fetchall()
 
-    def getCandidates(self):
-        self.db.execute("SELECT CandidateID, CategoryName, CandidateName, PartyName, PartyArt, NumVotes FROM Candidates A, Categories B WHERE A.Category = B.CategoryID")
-        return self.db.fetchall()
+    def getCandidates(self, hideVotes=None):
+        if hideVotes == None:
+            if self.hideVotes:
+                self.db.execute("SELECT CandidateID, CategoryName, CandidateName, PartyName, PartyArt FROM Candidates A, Categories B WHERE A.Category = B.CategoryID")
+                return [x+("-",) for x in self.db.fetchall()]
+            else:
+                self.db.execute("SELECT CandidateID, CategoryName, CandidateName, PartyName, PartyArt, NumVotes FROM Candidates A, Categories B WHERE A.Category = B.CategoryID")
+                return self.db.fetchall()
+        else:
+            self.db.execute("SELECT CandidateID, CategoryName, CandidateName, PartyName, PartyArt, NumVotes FROM Candidates A, Categories B WHERE A.Category = B.CategoryID")
+            return self.db.fetchall()
 
     def voteCandidate(self, id):
         self.db.execute(f"UPDATE Candidates SET NumVotes=NumVotes+1 WHERE CandidateID={id}")

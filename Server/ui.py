@@ -5,6 +5,7 @@ from PIL import Image as Img
 from customtkinter import *
 from ctypes import windll
 from tkinter import *
+import time
 
 set_appearance_mode("dark")
 
@@ -61,6 +62,9 @@ class UI(Frame):
         connectedClientsLbl = CTkLabel(self.votingInformationFrame, text="Voting Information", font=("Seoge UI", 20, "bold"))
         connectedClientsLbl.place(relx=0.1, rely=0, relwidth=0.8, relheight=0.1)
 
+        hideVotesBtn = CTkButton(connectedClientsLbl, text="👁", command=self.hideVotes, font=("Segoe UI", 20))
+        hideVotesBtn.place(relx=0.9, rely=0.1, relwidth=0.1, relheight=0.8)
+
         self.votingInformationTV = Treeview(self.votingInformationFrame, columns=("c1", "c2", "c3", "c4", "c5"), show="headings")
         self.votingInformationTV.column("#1", anchor=CENTER, width=50)
         self.votingInformationTV.heading("#1", text="S.NO")
@@ -95,6 +99,13 @@ class UI(Frame):
 
         self.place(relx=0, rely=0, relwidth=1, relheight=1)
 
+    def hideVotes(self):
+        self.database.hideVotes = not self.database.hideVotes
+        values = []
+        for i in self.database.getCandidates():
+            values.append((i[0], i[1], i[2], i[3], i[5]))
+        self.updateVotingInformationTV(values)
+        
     def updateConnectedClientsTV(self, values):
         items = getAllChildren(self.connectedClientsTV)
         for item in items:
@@ -135,8 +146,7 @@ class UI(Frame):
             messagebox.showinfo("ElectED - Server", "Please disconnect all clients before editing candidates")
             return
         self.manageCandidatesBtn.configure(state="disabled")
-        mc = ManageCandidates(self.manageCandidatesBtn, self.database)
-        mc.updateParentTV = self.updateVotingInformationTV
+        mc = ManageCandidates(self.manageCandidatesBtn, self.database, self.updateVotingInformationTV)
 
 class ManageCategory(CTkToplevel):
     def __init__(self, btn, database, *args, **kwargs):
@@ -211,7 +221,7 @@ class ManageCategory(CTkToplevel):
         if len(self.categoryTV.selection()) == 0:
             messagebox.showerror("ElectED - Manage Categories", "Please select a category", parent=self)
             return
-        if messagebox.askyesno("ElectED - Manage Categories", "Are you sure you want to delete the category and the candidates in that category?\nThis action is IRREVERSIBLE"):
+        if messagebox.askyesno("ElectED - Manage Categories", "Are you sure you want to delete the category and the candidates in that category?\nThis action is IRREVERSIBLE", parent=self):
             self.database.deleteCategory(self.categoryTV.item(self.categoryTV.selection()[0], 'values')[0])
             for i in getAllChildren(self.connectedClientsTV):
                 if self.connectedClientsTV.item(i, 'values')[1] == self.categoryTV.item(self.categoryTV.selection()[0], 'values')[1]:
@@ -238,9 +248,10 @@ class ManageCategory(CTkToplevel):
             self.categoryTV.insert('', 'end', values=i)
 
 class ManageCandidates(CTkToplevel):
-    def __init__(self, btn, database, *args, **kwargs):
+    def __init__(self, btn, database, updateParentTV, *args, **kwargs):
         self.btn = btn
         self.database = database
+        self.updateParentTV = updateParentTV
         super().__init__(*args, **kwargs)
         self.protocol("WM_DELETE_WINDOW", self.onClose)
         self.minsize(1066, 600)
@@ -285,7 +296,7 @@ class ManageCandidates(CTkToplevel):
     
     def createCandidateFunc(self):
         createCandidateForm = CreateCandidateForm(self, self.database, self.updateTV, CTkFrame(self))
-        createCandidateForm.place(relx=0.2, rely=0.05, relwidth=0.6, relheight=0.9)
+        createCandidateForm.place(relx=0.25, rely=0.15, relwidth=0.5, relheight=0.7)
     
     def editCandidateFunc(self):
         if len(self.candidateTV.selection()) == 0:
@@ -314,14 +325,9 @@ class ManageCandidates(CTkToplevel):
         if len(self.candidateTV.selection()) == 0:
             messagebox.showerror("ElectED - Manage Candidates", "Please select a candidate", parent=self)
             return
-        if messagebox.askyesno("ElectED - Manage Candidates", "Are you sure you want to delete the candidate and the candidates in that candidate?\nThis action is IRREVERSIBLE"):
-            self.database.deleteCandidate(self.candidateTV.item(self.candidateTV.selection()[0], 'values')[0])
-            for i in getAllChildren(self.connectedClientsTV):
-                if self.connectedClientsTV.item(i, 'values')[1] == self.candidateTV.item(self.candidateTV.selection()[0], 'values')[1]:
-                    self.connectedClientsTV.selection_set(i)
-                    self.disconnect()
-                    break
-            messagebox.showinfo("ElectED - Manage Candidates", f"Candidate {self.candidateTV.item(self.candidateTV.selection()[0], 'values')[1]} deleted successfully", parent=self)
+        if messagebox.askyesno("ElectED - Manage Candidates", "Are you sure you want to delete the candidate?\nThis action is IRREVERSIBLE",parent=self):
+            self.database.deleteCandidate(self.candidateTV.item(self.candidateTV.selection()[0], 'values')[1])
+            messagebox.showinfo("ElectED - Manage Candidates", f"Candidate {self.candidateTV.item(self.candidateTV.selection()[0], 'values')[3]} deleted successfully", parent=self)
             self.updateTV()
 
             values = []
@@ -337,23 +343,136 @@ class ManageCandidates(CTkToplevel):
         items = getAllChildren(self.candidateTV)
         for item in items:
             self.candidateTV.delete(item)
-        candidates = self.database.getCandidates()
+        candidates = self.database.getCandidates(hideVotes=False)
         for i in range(len(candidates)):
             self.candidateTV.insert('', 'end', values=(i+1, *candidates[i]))
+        
+        values = []
+        for i in self.database.getCandidates():
+            values.append((i[0], i[1], i[2], i[3], i[5]))
+        self.updateParentTV(values)
 
 class CreateCandidateForm(CTkFrame):
     def __init__(self, parent, database, updateTV, backgroundOverlayFrame, *args, **kwargs):
+        kwargs["fg_color"] = "#222222"
+        kwargs["bg_color"] = "#2A2C2C"
+        kwargs["corner_radius"] = 20
         super().__init__(parent, *args, **kwargs)
         self.database = database
         self.updateTV = updateTV
         self.backgroundOverlayFrame = backgroundOverlayFrame
+        self.parent = parent
         setOpacity(self.backgroundOverlayFrame, 0.5)
         self.backgroundOverlayFrame.bind("<Button-1>", self.closeForm)
         self.backgroundOverlayFrame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
+        createCandidateFormLbl = CTkLabel(self, text="Create Candidate", font=("Segoe UI", 24, "bold"))
+        createCandidateFormLbl.place(relx=0.2, rely=0, relwidth=0.6, relheight=0.15)
+
+        categoryLbl = CTkLabel(self, text="Category:", font=("Segoe UI", 18), anchor="w")
+        categoryLbl.place(relx=0.1, rely=0.25, relwidth=0.4, relheight=0.075)
+
+        self.categoryDropDownVar = StringVar(master=self, value="Select...")
+        categoryDropDown = CTkOptionMenu(self, variable=self.categoryDropDownVar, font=("Segoe UI", 18), values=[x[1] for x in self.database.getCategories()])
+        categoryDropDown.place(relx=0.5, rely=0.25, relwidth=0.4, relheight=0.075)
+
+        cNameLbl = CTkLabel(self, text="Candidate Name:", font=("Segoe UI", 18), anchor="w")
+        cNameLbl.place(relx=0.1, rely=0.4, relwidth=0.4, relheight=0.075)
+
+        self.cNameEnt = CTkEntry(self, font=("Segoe UI", 18), placeholder_text="Candidate Name...")
+        self.cNameEnt.place(relx=0.5, rely=0.4, relwidth=0.4, relheight=0.075)
+
+        pNameLbl = CTkLabel(self, text="Party Name:", font=("Segoe UI", 18), anchor="w")
+        pNameLbl.place(relx=0.1, rely=0.55, relwidth=0.4, relheight=0.075)
+
+        self.pNameEnt = CTkEntry(self, font=("Segoe UI", 18), placeholder_text="Party Name...")
+        self.pNameEnt.place(relx=0.5, rely=0.55, relwidth=0.4, relheight=0.075)
+
+        pArtLbl = CTkLabel(self, text="Party Art:", font=("Segoe UI", 18), anchor="w")
+        pArtLbl.place(relx=0.1, rely=0.7, relwidth=0.4, relheight=0.075)
+
+        self.pArtEnt = CTkEntry(self, font=("Segoe UI", 18), placeholder_text="Party Art...")
+        self.pArtEnt.bind("<FocusIn>", self.pArtBind)
+        self.pArtEnt.place(relx=0.5, rely=0.7, relwidth=0.4, relheight=0.075)
+
+        self.cancelButton = CTkButton(self, font=("Segoe UI", 18), text="Cancel", command=self.closeForm)
+        self.cancelButton.place(relx=0.1, rely=0.85, relwidth=0.375, relheight=0.1)
+
+        self.createButton = CTkButton(self, font=("Segoe UI", 18), text="Create", command=self.createFunc)
+        self.createButton.place(relx=0.525, rely=0.85, relwidth=0.4, relheight=0.1)
+
+    def createFunc(self):
+        if self.categoryDropDownVar.get() == "Select...":
+            messagebox.showerror("ElectED - Manage Candidates", "Please select a category", parent=self)
+            return
+        if self.cNameEnt.get() == "":
+            messagebox.showerror("ElectED - Manage Candidates", "Please enter candidate name", parent=self)
+            return
+        if self.pNameEnt.get() == "":
+            messagebox.showerror("ElectED - Manage Candidates", "Please enter party name", parent=self)
+            return
+        if self.pArtEnt.get() == "":
+            messagebox.showerror("ElectED - Manage Candidates", "Please select a party image", parent=self)
+            return
+        
+        self.database.createCandidate(self.categoryDropDownVar.get(), self.cNameEnt.get(), self.pNameEnt.get(), self.pArtEnt.get())
+        messagebox.showinfo("ElectED - Manage Candidates", "Created candidate sucessfully", parent=self)
+        self.closeForm()
+    
+    def pArtBind(self, *_):
+        self.focus_set()
+        img = PartyImageForm(self.parent, self.pArtEnt, CTkFrame(self.parent))
+
     def closeForm(self, *_):
+        self.updateTV()
         self.backgroundOverlayFrame.place_forget()
         self.place_forget()
+
+class PartyImageForm(CTkFrame):
+    def __init__(self, parent, pArtEnt, overlayFrame, *args, **kwargs):
+        kwargs['corner_radius'] = 30
+        super().__init__(parent, *args, **kwargs)
+        self.path = None
+        self.overlayFrame = overlayFrame
+        self.pArtEnt = pArtEnt
+        setOpacity(self.overlayFrame, 0.5)
+        self.overlayFrame.bind("<Button-1>", self.closeForm)
+        self.overlayFrame.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+        self.titleLbl = CTkLabel(self, text="Choose Image", font=("Segoe UI", 24, "bold"))
+        self.titleLbl.place(relx=0.1, rely=0, relwidth=0.8, relheight=0.15)
+
+        self.mainFrame = CTkScrollableFrame(self)
+        self.mainFrame.place(relx=0.1, rely=0.15, relwidth=0.8, relheight=0.7)
+
+        self.lof = os.listdir("./PartyArt/")
+        self.btns = []
+        for i in range(len(self.lof)):
+            btn = CTkLabel(self.mainFrame, text="", image=CTkImage(None, Img.open(f"./PartyArt/{self.lof[i]}"), (200,200)), corner_radius=20)
+            btn.bind("<Button-1>", lambda *_, i=i: self.selectImage(i))
+            btn.grid(row=i//2, column=i%2, ipadx=10, ipady=35)
+            self.btns.append(btn)
+
+        self.cancelButton = CTkButton(self, text="Cancel", command=self.closeForm, font=("Segoe UI", 18))
+        self.cancelButton.place(relx=0.1, rely=0.89, relwidth=0.39, relheight=0.07)
+
+        self.selectButton = CTkButton(self, text="Select", command=self.closeForm, font=("Segoe UI", 18))
+        self.selectButton.place(relx=0.51, rely=0.89, relwidth=0.39, relheight=0.07)
+
+        self.place(relx=0.2, rely=0.1, relwidth=0.6, relheight=0.8)
+    
+    def closeForm(self, *_):
+        self.overlayFrame.place_forget()
+        self.place_forget()
+        if self.path == None: return
+        self.pArtEnt.delete(0, END)
+        self.pArtEnt.insert(0, self.path)
+    
+    def selectImage(self, i, *_):
+        self.path = self.lof[i]
+        for x in self.btns:
+            x.configure(fg_color="transparent")
+        self.btns[i].configure(fg_color="#1f6aa5")
 
 def getAllChildren(tree, item=""):
         children = tree.get_children(item)
