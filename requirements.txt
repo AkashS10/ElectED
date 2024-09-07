@@ -1,0 +1,5 @@
+Pillow>=9.4.0
+customtkinter>=5.2.2
+pywin32>=306
+mouse>=0.7.1
+pandas>=2.2.2
