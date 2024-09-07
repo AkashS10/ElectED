@@ -50,7 +50,7 @@ class DatabaseHandler:
     def editCandidate(self, candidateID, category, candidateName, partyName, partyArt, voteCount):
         self.db.execute(f"SELECT CategoryID FROM Categories WHERE CategoryName='{category}'")
         categoryID = self.db.fetchone()[0]
-        self.db.execute(f"UPDATE Candidates SET Category={categoryID}, CandidateName='{candidateName}', PartyName='{partyName}', PartyArt='{partyArt}', NumVotes={voteCount} WHERE CandidateID={candidateID}'")
+        self.db.execute(f"UPDATE Candidates SET Category={categoryID}, CandidateName='{candidateName}', PartyName='{partyName}', PartyArt='{partyArt}', NumVotes={voteCount} WHERE CandidateID={candidateID}")
         self.database.commit()
 
     def deleteCandidate(self, candidateID):

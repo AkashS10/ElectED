@@ -295,31 +295,16 @@ class ManageCandidates(CTkToplevel):
         self.updateTV()
     
     def createCandidateFunc(self):
-        createCandidateForm = CreateCandidateForm(self, self.database, self.updateTV, CTkFrame(self))
+        createCandidateForm = CreateEditCandidateForm(self, self.database, self.updateTV, CTkFrame(self))
         createCandidateForm.place(relx=0.25, rely=0.15, relwidth=0.5, relheight=0.7)
     
     def editCandidateFunc(self):
         if len(self.candidateTV.selection()) == 0:
             messagebox.showerror("ElectED - Manage Candidates", "Please select a candidate", parent=self)
             return
-        candidateName = simpledialog.askstring("ElectED - Manage Candidates", "Enter new candidate name", initialvalue=self.candidateTV.item(self.candidateTV.selection()[0], 'values')[1])
-        if candidateName == None: return
-        if candidateName == "":
-            messagebox.showerror("ElectED - Manage Candidates", "Please enter a candidate name", parent=self)
-            return
-        self.database.editCandidate(self.candidateTV.item(self.candidateTV.selection()[0], 'values')[0], candidateName)
-        for i in getAllChildren(self.connectedClientsTV):
-                if self.connectedClientsTV.item(i, 'values')[1] == self.candidateTV.item(self.candidateTV.selection()[0], 'values')[1]:
-                    self.connectedClientsTV.selection_set(i)
-                    self.disconnect()
-                    break
-        messagebox.showinfo("ElectED - Manage Candidates", "Candidate successfully edited", parent=self)
-        self.updateTV()
-        
-        values = []
-        for i in self.database.getCandidates():
-            values.append((i[0], i[1], i[2], i[3], i[5]))
-        self.updateParentTV(values)
+        edit = self.candidateTV.item(self.candidateTV.selection()[0], 'values')[1:]
+        createCandidateForm = CreateEditCandidateForm(self, self.database, self.updateTV, CTkFrame(self), edit)
+        createCandidateForm.place(relx=0.25, rely=0.15, relwidth=0.5, relheight=0.7)
 
     def deleteCandidateFunc(self):
         if len(self.candidateTV.selection()) == 0:
@@ -352,12 +337,13 @@ class ManageCandidates(CTkToplevel):
             values.append((i[0], i[1], i[2], i[3], i[5]))
         self.updateParentTV(values)
 
-class CreateCandidateForm(CTkFrame):
-    def __init__(self, parent, database, updateTV, backgroundOverlayFrame, *args, **kwargs):
+class CreateEditCandidateForm(CTkFrame):
+    def __init__(self, parent, database, updateTV, backgroundOverlayFrame, edit=False, *args, **kwargs):
         kwargs["fg_color"] = "#222222"
         kwargs["bg_color"] = "#2A2C2C"
         kwargs["corner_radius"] = 20
         super().__init__(parent, *args, **kwargs)
+        self.edit = edit
         self.database = database
         self.updateTV = updateTV
         self.backgroundOverlayFrame = backgroundOverlayFrame
@@ -401,6 +387,14 @@ class CreateCandidateForm(CTkFrame):
         self.createButton = CTkButton(self, font=("Segoe UI", 18), text="Create", command=self.createFunc)
         self.createButton.place(relx=0.525, rely=0.85, relwidth=0.4, relheight=0.1)
 
+        if edit != False:
+            self.createButton.configure(text="Save")
+            createCandidateFormLbl.configure(text="Edit candidate")
+            self.categoryDropDownVar.set(edit[1])
+            self.cNameEnt.insert(END, edit[2])
+            self.pNameEnt.insert(END, edit[3])
+            self.pArtEnt.insert(END, edit[4])
+
     def createFunc(self):
         if self.categoryDropDownVar.get() == "Select...":
             messagebox.showerror("ElectED - Manage Candidates", "Please select a category", parent=self)
@@ -414,9 +408,11 @@ class CreateCandidateForm(CTkFrame):
         if self.pArtEnt.get() == "":
             messagebox.showerror("ElectED - Manage Candidates", "Please select a party image", parent=self)
             return
-        
-        self.database.createCandidate(self.categoryDropDownVar.get(), self.cNameEnt.get(), self.pNameEnt.get(), self.pArtEnt.get())
-        messagebox.showinfo("ElectED - Manage Candidates", "Created candidate sucessfully", parent=self)
+        if not self.edit:
+            self.database.createCandidate(self.categoryDropDownVar.get(), self.cNameEnt.get(), self.pNameEnt.get(), self.pArtEnt.get())
+        else:
+            self.database.editCandidate(self.edit[0], self.categoryDropDownVar.get(), self.cNameEnt.get(), self.pNameEnt.get(), self.pArtEnt.get(), self.edit[5])
+        messagebox.showinfo("ElectED - Manage Candidates", "Created" if not self.edit else "Edited" + " candidate sucessfully", parent=self)
         self.closeForm()
     
     def pArtBind(self, *_):
