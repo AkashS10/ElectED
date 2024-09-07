@@ -5,7 +5,8 @@ from PIL import Image as Img
 from customtkinter import *
 from ctypes import windll
 from tkinter import *
-import time
+import pandas as pd
+import sqlite3
 
 set_appearance_mode("dark")
 
@@ -26,6 +27,7 @@ class UI(Frame):
         parent.after(0, lambda: parent.state('zoomed'))
         parent.iconbitmap("res/icon.ico")
         self.parent = parent
+        self.startDt = datetime.now()
 
         self.header = CTkLabel(parent, fg_color="#333333", corner_radius=15, text="", image=CTkImage(None, Img.open('res/banner.png'), (1500, 90)))
         self.header.place(relx=0.014, rely=0.0226, relwidth=0.972, relheight=0.1126)
@@ -94,7 +96,7 @@ class UI(Frame):
         self.disconnectClientBtn = CTkButton(self.quickControlsFrame, text="Disconnect client", corner_radius=10, font=("Segoe UI", 20), command=self.disconnectClientFunc)
         self.disconnectClientBtn.place(relx=0.5025, rely=0.125, relwidth=0.24375, relheight=0.75)
 
-        self.concludeVotingBtn = CTkButton(self.quickControlsFrame, text="Conclude Voting", corner_radius=10, font=("Segoe UI", 20))
+        self.concludeVotingBtn = CTkButton(self.quickControlsFrame, text="Conclude Voting", corner_radius=10, font=("Segoe UI", 20), command=self.concludeVotingFunc)
         self.concludeVotingBtn.place(relx=0.75125, rely=0.125, relwidth=0.24375, relheight=0.75)
 
         self.place(relx=0, rely=0, relwidth=1, relheight=1)
@@ -147,6 +149,50 @@ class UI(Frame):
             return
         self.manageCandidatesBtn.configure(state="disabled")
         mc = ManageCandidates(self.manageCandidatesBtn, self.database, self.updateVotingInformationTV)
+
+    def concludeVotingFunc(self):
+        self.closeServer()
+        self.log("Server closed, voting concluded")
+        delta = datetime.now() - self.startDt
+        minutes = delta.seconds//60
+        seconds = delta.seconds%60
+        hours = minutes//60
+        minutes = minutes%60
+        self.log(f"Voting for {hours}h, {minutes}m and {seconds}s")
+
+        database = sqlite3.connect("database.db")
+        db = database.cursor()
+               
+        data = []
+        index = []
+        db.execute("SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryName")
+        categories = db.fetchall()
+        for i in categories:
+            data += [["", "", ""],]
+            index += [i[1],]
+            db.execute(f"SELECT PartyName, CandidateName, NumVotes FROM Candidates WHERE Category={i[0]} ORDER BY NumVotes")
+            sno = 1
+            for x in db.fetchall():
+                index += [sno,]
+                sno += 1
+                data += [x]
+            index += ["",]
+            data += [["", "", ""],]
+        index += ["", "Winners"]
+        data += [["", "", ""], ["", "", ""]]
+        db.execute("SELECT CategoryName, PartyName, CandidateName, MAX(NumVotes) FROM Candidates A, Categories B WHERE A.Category = B.CategoryID GROUP BY CategoryName")
+        for i in db.fetchall():
+            index += [i[0],]
+            data += [i[1:]]
+        database.close()
+
+        df = pd.DataFrame(data, index)
+        df.columns = ["PartyName", "CandidateName", "NumVotes"]
+        df.to_csv("Results.xlsx")
+        self.log("Exported voting data to CSV")
+
+        messagebox.showinfo("ElectED - Server", "Voting results have been saved to CSV\nPress Ok to close the app")
+        exit()
 
 class ManageCategory(CTkToplevel):
     def __init__(self, btn, database, *args, **kwargs):

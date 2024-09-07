@@ -137,13 +137,24 @@ def updateVotingInformationTV():
 
 def socketAcceptLoop():
     while True:
-        c, addr = s.accept()
+        try:
+            c, addr = s.accept()
+        except OSError:
+            return
         uiFrame.log("Client connected")
         connectedClients.append(Client(c))
+
+def closeServer():
+    for client in connectedClients:
+        disconnect(client)
+    tSocketLoop.join(0)
+    database.database.close()
+    s.close()
 
 root = ui.CTk()
 uiFrame = ui.UI(root)
 uiFrame.disconnect = disconnect
+uiFrame.closeServer = closeServer
 connectedClients = []
 
 ip = "0.0.0.0"
@@ -161,7 +172,4 @@ updateVotingInformationTV()
 uiFrame.log(f"Server running on {ip}:{port}")
 
 root.mainloop()
-for client in connectedClients:
-    disconnect(client)
-tSocketLoop.join(0)
-database.database.close()
+closeServer()
