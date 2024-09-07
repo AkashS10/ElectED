@@ -529,8 +529,3 @@ def setOpacity(widget, value: float):
     new_exstyle = wnd_exstyle | 0x00080000  
     windll.user32.SetWindowLongA(widget, -20, new_exstyle)  
     windll.user32.SetLayeredWindowAttributes(widget, 0, value, 2)
-
-if __name__ == "__main__":
-    import os
-    os.chdir("Server")
-    import server

@@ -1,8 +1,3 @@
-# TODO Remove this block after finishing development
-import os
-if os.getcwd()[-6:] != "Server":
-    os.chdir("Server")
-
 import threading
 import hashlib
 import socket

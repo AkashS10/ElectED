@@ -1,6 +1,6 @@
+from win32api import GetSystemMetrics
 from PIL import Image as Img
 from customtkinter import *
-from win32api import GetSystemMetrics
 import threading
 import hashlib
 import socket
@@ -269,8 +269,3 @@ class CandidateFrame(CTkFrame):
         self.networkHandler.s.send(f"/vc/{self.id}".encode()) #VC - Vote Candidate
         self.networkHandler.numVotes += 1
         self.networkHandler.vTotalVoteCountLbl.configure(text=f"Total Vote Count\n{self.networkHandler.numVotes}")
-
-if __name__ == "__main__":
-    import os
-    os.chdir("Client")
-    import main # type: ignore

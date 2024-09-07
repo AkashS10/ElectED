@@ -1,8 +1,3 @@
-# TODO Remove this block after finishing development
-import os
-if os.getcwd()[-6:] != "Client":
-    os.chdir("Client")
-
 from tkinter import messagebox
 from customtkinter import *
 import os
