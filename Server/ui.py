@@ -494,6 +494,9 @@ class PartyImageForm(CTkFrame):
             btn.bind("<Button-1>", lambda *_, i=i: self.selectImage(i))
             btn.grid(row=i//2, column=i%2, ipadx=10, ipady=35)
             self.btns.append(btn)
+        if self.btns == []:
+            noImageLbl = CTkLabel(self, text="There are no images\nPlease put the party art images in the folder \"PartyArt\"", font=("Segoe UI", 16))
+            noImageLbl.place(relx=0.1, rely=0.15, relwidth=0.8, relheight=0.7)
 
         self.cancelButton = CTkButton(self, text="Cancel", command=self.closeForm, font=("Segoe UI", 18))
         self.cancelButton.place(relx=0.1, rely=0.89, relwidth=0.39, relheight=0.07)
