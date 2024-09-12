@@ -92,6 +92,8 @@ class NetworkHandler:
                 break
             elif data == "/nr/":
                 self.waitingOverlay.place_forget()
+                self.numVotes += 1
+                self.vTotalVoteCountLbl.configure(text=f"Total Vote Count\n{self.numVotes}")
     
     def displayCandidates(self):
         match len(self.candidates):
@@ -267,5 +269,3 @@ class CandidateFrame(CTkFrame):
         mouse.move(x, y)
 
         self.networkHandler.s.send(f"/vc/{self.id}".encode()) #VC - Vote Candidate
-        self.networkHandler.numVotes += 1
-        self.networkHandler.vTotalVoteCountLbl.configure(text=f"Total Vote Count\n{self.networkHandler.numVotes}")

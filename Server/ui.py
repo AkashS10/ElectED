@@ -7,6 +7,7 @@ from ctypes import windll
 from tkinter import *
 import pandas as pd
 import sqlite3
+import os
 
 set_appearance_mode("dark")
 
@@ -29,6 +30,9 @@ class UI(Frame):
         self.parent = parent
         self.startDt = datetime.now()
 
+        if not os.path.exists("res/banner.png"):
+            messagebox.showerror("ElectED", "Banner image not found\nPlace a PNG image named \"banner.png\" with the resolution 1878x116\nQuitting the app")
+            exit()
         self.header = CTkLabel(parent, fg_color="#333333", corner_radius=15, text="", image=CTkImage(None, Img.open('res/banner.png'), (1500, 90)))
         self.header.place(relx=0.014, rely=0.0226, relwidth=0.972, relheight=0.1126)
 

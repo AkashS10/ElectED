@@ -46,7 +46,7 @@ class Client:
                 uiFrame.log(f"{self.hostname if self.hostname != None else 'Client'} chose category {self.category}, {self.categoryID}")
                 updateConnectedClientsTV()
                 candidates = []
-                for i in database.getCandidates():
+                for i in database.getCandidates(hideVotes=False):
                     if i[1] == self.category:
                         candidates.append(i)
                 for imagePath in candidates:
@@ -66,6 +66,7 @@ class Client:
                 updateConnectedClientsTV()
 
             elif data.startswith("/vc/"):
+                if self.voted: continue
                 data = data[4:]
                 id = int(data)
                 database.voteCandidate(id)
