@@ -192,7 +192,7 @@ class UI(Frame):
 
         df = pd.DataFrame(data, index)
         df.columns = ["PartyName", "CandidateName", "NumVotes"]
-        df.to_csv("Results.xlsx")
+        df.to_csv("Results.csv")
         self.log("Exported voting data to CSV")
 
         messagebox.showinfo("ElectED - Server", "Voting results have been saved to CSV\nPress Ok to close the app")
