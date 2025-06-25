@@ -71,19 +71,22 @@ class Client:
                 id = int(data)
                 database.voteCandidate(id)
                 self.numVotes += 1
-                self.voted = True
                 updateConnectedClientsTV()
                 updateVotingInformationTV()
                 
                 uiFrame.log(f"Recieved vote from {self.hostname}")
 
-                allVoted = True
-                for i in connectedClients:
-                    allVoted = allVoted and i.voted
-                if allVoted:  
+                if uiFrame.roundMode:
+                    self.voted = True
+                    allVoted = True
                     for i in connectedClients:
-                        i.voted = False
-                        i.c.send("/nr/".encode()) # NR - Next Round
+                        allVoted = allVoted and i.voted
+                    if allVoted:  
+                        for i in connectedClients:
+                            i.voted = False
+                            i.c.send("/nr/".encode()) # NR - Next Round
+                else:
+                    threading.Thread(target=timerModeFunc, args=(self.c,), daemon=True).start()
             else:
                 uiFrame.log(f"Data received from {self.hostname if self.hostname else 'a client'}: {data}")
 
@@ -118,6 +121,10 @@ def disconnect(self, kicked=False):
         for i in connectedClients:
             i.voted = False
             i.c.send("/nr/".encode()) # NR - Next Round
+
+def timerModeFunc(c):
+    time.sleep(2)
+    c.send("/nr/".encode())
 
 def updateConnectedClientsTV():
     values = []
@@ -165,7 +172,7 @@ database = databaseHandler.DatabaseHandler()
 uiFrame.database = database
 updateVotingInformationTV()
 
-uiFrame.log(f"Server running on {ip}:{port}")
+uiFrame.log(f"Server running on {socket.gethostbyname(socket.gethostname())}")
 
 root.mainloop()
 closeServer()

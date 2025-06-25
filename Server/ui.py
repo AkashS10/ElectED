@@ -29,6 +29,7 @@ class UI(Frame):
         parent.iconbitmap("res/icon.ico")
         self.parent = parent
         self.startDt = datetime.now()
+        self.roundMode = True
 
         if not os.path.exists("res/banner.png"):
             messagebox.showerror("ElectED", "Banner image not found\nPlace a PNG image named \"banner.png\" with the resolution 1878x116\nQuitting the app")
@@ -68,8 +69,11 @@ class UI(Frame):
         connectedClientsLbl = CTkLabel(self.votingInformationFrame, text="Voting Information", font=("Seoge UI", 20, "bold"))
         connectedClientsLbl.place(relx=0.1, rely=0, relwidth=0.8, relheight=0.1)
 
-        hideVotesBtn = CTkButton(connectedClientsLbl, text="👁", command=self.hideVotes, font=("Segoe UI", 20))
-        hideVotesBtn.place(relx=0.9, rely=0.1, relwidth=0.1, relheight=0.8)
+        self.votingModeBtn = CTkButton(self.votingInformationFrame, text="🖧", font=("Segoe UI", 20), command=self.changeVotingMode)
+        self.votingModeBtn.place(relx=0.775, rely=0.015, relwidth=0.075, relheight=0.075)
+
+        hideVotesBtn = CTkButton(self.votingInformationFrame, text="👁", command=self.hideVotes, font=("Segoe UI", 20))
+        hideVotesBtn.place(relx=0.875, rely=0.015, relwidth=0.075, relheight=0.075)
 
         self.votingInformationTV = Treeview(self.votingInformationFrame, columns=("c1", "c2", "c3", "c4", "c5"), show="headings")
         self.votingInformationTV.column("#1", anchor=CENTER, width=50)
@@ -104,6 +108,16 @@ class UI(Frame):
         self.concludeVotingBtn.place(relx=0.75125, rely=0.125, relwidth=0.24375, relheight=0.75)
 
         self.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+    def changeVotingMode(self):
+        if len(getAllChildren(self.connectedClientsTV)) != 0:
+            messagebox.showinfo("ElectED - Server", "Please disconnect all clients before switching modes")
+            return
+        self.roundMode = not self.roundMode
+        if self.roundMode:
+            self.votingModeBtn.configure(text="🖧")
+        else:
+            self.votingModeBtn.configure(text="⏱")
 
     def hideVotes(self):
         self.database.hideVotes = not self.database.hideVotes
