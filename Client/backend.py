@@ -32,7 +32,7 @@ class NetworkHandler:
             return
         
         f = open("previousConnection.txt", "w+")
-        f.write(f"{ip}|{port}")
+        f.write(f"{ip}")
         f.close()
         self.s.send(f"/hn/{socket.gethostname()}".encode())
 
