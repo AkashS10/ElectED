@@ -1,13 +1,13 @@
 from win32api import GetSystemMetrics
 from PIL import Image as Img
+from tkinter import messagebox
 from customtkinter import *
 import threading
 import hashlib
 import socket
 import mouse
+import math
 import os
-
-set_appearance_mode("dark")
 
 class NetworkHandler:
     def __init__(self, messagebox, root):
@@ -96,112 +96,23 @@ class NetworkHandler:
                 self.vTotalVoteCountLbl.configure(text=f"Total Vote Count\n{self.numVotes}")
     
     def displayCandidates(self):
-        match len(self.candidates):
-            case 2:
-                c1 = CandidateFrame(self.votingFrame, self.candidates[0][0], self.candidates[0][2], self.candidates[0][3], self.candidates[0][4], self)
-                c1.place(relx=0.2, rely=0.375, relwidth=0.225, relheight=0.4)
+        numRows = math.ceil(len(self.candidates) / 4)
+        horizontalSpacing = 0.015
+        verticalSpacing = 0.025
+        width = 0.23125
+        height = 0.4
 
-                c2 = CandidateFrame(self.votingFrame, self.candidates[1][0], self.candidates[1][2], self.candidates[1][3], self.candidates[1][4], self)
-                c2.place(relx=0.575, rely=0.375, relwidth=0.225, relheight=0.4)
-            case 3:
-                c1 = CandidateFrame(self.votingFrame, self.candidates[0][0], self.candidates[0][2], self.candidates[0][3], self.candidates[0][4], self)
-                c1.place(relx=0.1225, rely=0.375, relwidth=0.225, relheight=0.4)
+        if numRows == 1:
+            j = 0.5
+            numCols = len(self.candidates)
+            for i in range(numCols):
+                CandidateFrame(self.votingFrame, self.candidates[(math.floor(j) * 4) + i], self).place(relx=((width * i) + horizontalSpacing * (i + 1)) + (((4 - numCols) * (width + horizontalSpacing)) / 2), rely=0.125 + (height * j) + verticalSpacing * (j + 1), relwidth=width, relheight=height)
+        elif numRows == 2:
+            for j in range(2):
+                numCols = 4 if j == 0 else len(self.candidates) - 4
+                for i in range(numCols):
+                    CandidateFrame(self.votingFrame, self.candidates[(math.floor(j) * 4) + i], self).place(relx=((width * i) + horizontalSpacing * (i + 1)) + (((4 - numCols) * (width + horizontalSpacing)) / 2), rely=0.125 + (height * j) + verticalSpacing * (j + 1), relwidth=width, relheight=height)
 
-                c2 = CandidateFrame(self.votingFrame, self.candidates[1][0], self.candidates[1][2], self.candidates[1][3], self.candidates[1][4], self)
-                c2.place(relx=0.3925, rely=0.375, relwidth=0.225, relheight=0.4)
-
-                c3 = CandidateFrame(self.votingFrame, self.candidates[2][0], self.candidates[2][2], self.candidates[2][3], self.candidates[2][4], self)
-                c3.place(relx=0.6625, rely=0.375, relwidth=0.225, relheight=0.4)
-            case 4:
-                c1 = CandidateFrame(self.votingFrame, self.candidates[0][0], self.candidates[0][2], self.candidates[0][3], self.candidates[0][4], self)
-                c1.place(relx=0.0625, rely=0.375, relwidth=0.2, relheight=0.4)
-
-                c2 = CandidateFrame(self.votingFrame, self.candidates[1][0], self.candidates[1][2], self.candidates[1][3], self.candidates[1][4], self)
-                c2.place(relx=0.2875, rely=0.375, relwidth=0.2, relheight=0.4)
-                
-                c3 = CandidateFrame(self.votingFrame, self.candidates[2][0], self.candidates[2][2], self.candidates[2][3], self.candidates[2][4], self)
-                c3.place(relx=0.5125, rely=0.375, relwidth=0.2, relheight=0.4)
-
-                c4 = CandidateFrame(self.votingFrame, self.candidates[3][0], self.candidates[3][2], self.candidates[3][3], self.candidates[3][4], self)
-                c4.place(relx=0.7375, rely=0.375, relwidth=0.2, relheight=0.4)
-            case 5:
-                c1 = CandidateFrame(self.votingFrame, self.candidates[0][0], self.candidates[0][2], self.candidates[0][3], self.candidates[0][4], self)
-                c1.place(relx=0.0225, rely=0.375, relwidth=0.18, relheight=0.38)
-
-                c2 = CandidateFrame(self.votingFrame, self.candidates[1][0], self.candidates[1][2], self.candidates[1][3], self.candidates[1][4], self)
-                c2.place(relx=0.2125, rely=0.375, relwidth=0.18, relheight=0.38)
-                
-                c3 = CandidateFrame(self.votingFrame, self.candidates[2][0], self.candidates[2][2], self.candidates[2][3], self.candidates[2][4], self)
-                c3.place(relx=0.4025, rely=0.375, relwidth=0.18, relheight=0.38)
-
-                c4 = CandidateFrame(self.votingFrame, self.candidates[3][0], self.candidates[3][2], self.candidates[3][3], self.candidates[3][4], self)
-                c4.place(relx=0.5925, rely=0.375, relwidth=0.18, relheight=0.38)
-
-                c5 = CandidateFrame(self.votingFrame, self.candidates[4][0], self.candidates[4][2], self.candidates[4][3], self.candidates[4][4], self)
-                c5.place(relx=0.7825, rely=0.375, relwidth=0.18, relheight=0.38)
-            case 6:
-                c1 = CandidateFrame(self.votingFrame, self.candidates[0][0], self.candidates[0][2], self.candidates[0][3], self.candidates[0][4], self)
-                c1.place(relx=0.0625, rely=0.17, relwidth=0.2, relheight=0.38)
-
-                c2 = CandidateFrame(self.votingFrame, self.candidates[1][0], self.candidates[1][2], self.candidates[1][3], self.candidates[1][4], self)
-                c2.place(relx=0.2875, rely=0.17, relwidth=0.2, relheight=0.38)
-                
-                c3 = CandidateFrame(self.votingFrame, self.candidates[2][0], self.candidates[2][2], self.candidates[2][3], self.candidates[2][4], self)
-                c3.place(relx=0.5125, rely=0.17, relwidth=0.2, relheight=0.38)
-
-                c4 = CandidateFrame(self.votingFrame, self.candidates[3][0], self.candidates[3][2], self.candidates[3][3], self.candidates[3][4], self)
-                c4.place(relx=0.7375, rely=0.17, relwidth=0.2, relheight=0.38)
-
-                c5 = CandidateFrame(self.votingFrame, self.candidates[4][0], self.candidates[4][2], self.candidates[4][3], self.candidates[4][4], self)
-                c5.place(relx=0.2, rely=0.595, relwidth=0.2, relheight=0.38)
-
-                c6 = CandidateFrame(self.votingFrame, self.candidates[5][0], self.candidates[5][2], self.candidates[5][3], self.candidates[5][4], self)
-                c6.place(relx=0.575, rely=0.595, relwidth=0.2, relheight=0.38)
-            case 7:
-                c1 = CandidateFrame(self.votingFrame, self.candidates[0][0], self.candidates[0][2], self.candidates[0][3], self.candidates[0][4], self)
-                c1.place(relx=0.0625, rely=0.17, relwidth=0.2, relheight=0.38)
-
-                c2 = CandidateFrame(self.votingFrame, self.candidates[1][0], self.candidates[1][2], self.candidates[1][3], self.candidates[1][4], self)
-                c2.place(relx=0.2875, rely=0.17, relwidth=0.2, relheight=0.38)
-                
-                c3 = CandidateFrame(self.votingFrame, self.candidates[2][0], self.candidates[2][2], self.candidates[2][3], self.candidates[2][4], self)
-                c3.place(relx=0.5125, rely=0.17, relwidth=0.2, relheight=0.38)
-
-                c4 = CandidateFrame(self.votingFrame, self.candidates[3][0], self.candidates[3][2], self.candidates[3][3], self.candidates[3][4], self)
-                c4.place(relx=0.7375, rely=0.17, relwidth=0.2, relheight=0.38)
-
-                c5 = CandidateFrame(self.votingFrame, self.candidates[4][0], self.candidates[4][2], self.candidates[4][3], self.candidates[4][4], self)
-                c5.place(relx=0.1225, rely=0.595, relwidth=0.2, relheight=0.38)
-
-                c6 = CandidateFrame(self.votingFrame, self.candidates[5][0], self.candidates[5][2], self.candidates[5][3], self.candidates[5][4], self)
-                c6.place(relx=0.3925, rely=0.595, relwidth=0.2, relheight=0.38)
-
-                c7 = CandidateFrame(self.votingFrame, self.candidates[6][0], self.candidates[6][2], self.candidates[6][3], self.candidates[6][4], self)
-                c7.place(relx=0.6625, rely=0.595, relwidth=0.2, relheight=0.38)
-            case 8:
-                c1 = CandidateFrame(self.votingFrame, self.candidates[0][0], self.candidates[0][2], self.candidates[0][3], self.candidates[0][4], self)
-                c1.place(relx=0.0625, rely=0.17, relwidth=0.2, relheight=0.38)
-
-                c2 = CandidateFrame(self.votingFrame, self.candidates[1][0], self.candidates[1][2], self.candidates[1][3], self.candidates[1][4], self)
-                c2.place(relx=0.2875, rely=0.17, relwidth=0.2, relheight=0.38)
-                
-                c3 = CandidateFrame(self.votingFrame, self.candidates[2][0], self.candidates[2][2], self.candidates[2][3], self.candidates[2][4], self)
-                c3.place(relx=0.5125, rely=0.17, relwidth=0.2, relheight=0.38)
-
-                c4 = CandidateFrame(self.votingFrame, self.candidates[3][0], self.candidates[3][2], self.candidates[3][3], self.candidates[3][4], self)
-                c4.place(relx=0.7375, rely=0.17, relwidth=0.2, relheight=0.38)
-                
-                c5 = CandidateFrame(self.votingFrame, self.candidates[4][0], self.candidates[4][2], self.candidates[4][3], self.candidates[4][4], self)
-                c5.place(relx=0.0625, rely=0.595, relwidth=0.2, relheight=0.38)
-
-                c6 = CandidateFrame(self.votingFrame, self.candidates[5][0], self.candidates[5][2], self.candidates[5][3], self.candidates[5][4], self)
-                c6.place(relx=0.2875, rely=0.595, relwidth=0.2, relheight=0.38)
-                
-                c7 = CandidateFrame(self.votingFrame, self.candidates[6][0], self.candidates[6][2], self.candidates[6][3], self.candidates[6][4], self)
-                c7.place(relx=0.5125, rely=0.595, relwidth=0.2, relheight=0.38)
-
-                c8 = CandidateFrame(self.votingFrame, self.candidates[7][0], self.candidates[7][2], self.candidates[7][3], self.candidates[7][4], self)
-                c8.place(relx=0.7375, rely=0.595, relwidth=0.2, relheight=0.38)
         self.waitingOverlay = CTkFrame(self.votingFrame)
         waitingLbl = CTkLabel(self.waitingOverlay, text="Vote casted successfully\nWaiting for next round...", font=("Segoe UI", 28, "bold"))
         waitingLbl.place(relx=0, rely=0, relwidth=1, relheight=1)
@@ -242,23 +153,27 @@ class NetworkHandler:
         exit()
 
 class CandidateFrame(CTkFrame):
-    def __init__(self, parent, id, candidateName, partyName, partyArtPath, networkHandler, **kwargs):
+    def __init__(self, parent, info, networkHandler, **kwargs):
         kwargs['corner_radius'] = 20
+        kwargs['fg_color'] = ("#c8c8c8", "#545454")
         super().__init__(parent, **kwargs)
         self.networkHandler = networkHandler
-        self.id = id
+        self.id = info[0]
+        candidateName = info[2]
+        partyName = info[3]
+        partyArtPath = info[4]
 
-        nameLbl = CTkLabel(self, text=candidateName, font=("Seoge UI", 24, "bold"), corner_radius=20)
-        nameLbl.place(relx=0.1, rely=0.04, relwidth=0.8, relheight=0.15)
+        pNameLbl = CTkLabel(self, text=candidateName + " - " + partyName, font=("Segoe UI", 20, "bold"))
+        pNameLbl.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.1)
 
-        pNameLbl = CTkLabel(self, text=partyName, font=("Segoe UI", 20))
-        pNameLbl.place(relx=0.2, rely=0.19, relwidth=0.6, relheight=0.1)
-
-        pImage = CTkLabel(self, text="", image=CTkImage(None, Img.open(partyArtPath), (200, 200)))
-        pImage.place(relx=0.175, rely=0.315, relwidth=0.65, relheight=0.65)
+        try:
+            pImage = CTkLabel(self, text="", image=CTkImage(None, Img.open(partyArtPath), (320, 260)))
+            pImage.place(relx=0.05, rely=0.2, relwidth=0.9, relheight=0.75)
+        except:
+            messagebox.showerror("ElectED Lite", f"Party Art image {partyArtPath} doesn't exist")
+            sys.exit()
 
         self.bind("<Button-1>", self.callback)
-        nameLbl.bind("<Button-1>", self.callback)
         pNameLbl.bind("<Button-1>", self.callback)
         pImage.bind("<Button-1>", self.callback)
     

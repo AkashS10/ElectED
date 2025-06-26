@@ -39,14 +39,14 @@ cCategoryOptionMenu.place(relx=0.1, rely=0.675, relwidth=0.8, relheight=0.08)
 cBeginVotingBtn = CTkButton(configureFrame, text="Begin Voting", font=("Segoe UI", 20), state="disabled", command=lambda: s.beginVoting(cCategoryOptionMenuVar.get(), configureFrame, vCategoryTitleLbl, vTotalVoteCountLbl))
 cBeginVotingBtn.place(relx=0.1, rely=0.805, relwidth=0.8, relheight=0.125)
 
-votingFrame = CTkFrame(root)
+votingFrame = CTkFrame(root, fg_color=("#fff", "#333"))
 s.votingFrame = votingFrame
 
 vCategoryTitleLbl = CTkLabel(votingFrame, text="Category", font=("Segoe UI", 32, "bold"))
-vCategoryTitleLbl.place(relx=0, rely=0, relwidth=1, relheight=0.15)
+vCategoryTitleLbl.place(relx=0, rely=0, relwidth=1, relheight=0.125)
 
 vTotalVoteCountLbl = CTkLabel(votingFrame, text="Total Vote Count\n0", font=("Segoe UI", 24, "bold"))
-vTotalVoteCountLbl.place(relx=0.8, rely=0, relwidth=0.2, relheight=0.15)
+vTotalVoteCountLbl.place(relx=0.8, rely=0, relwidth=0.2, relheight=0.125)
 
 if os.path.isfile("previousConnection.txt"):
     fPC = open("previousConnection.txt", "r")
